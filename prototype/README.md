@@ -22,9 +22,14 @@ Auf dem Smartphone/Desktop kann die Seite über das Browser-Menü
 
 ## Was funktioniert (echt, nicht nur Mockup)
 
+- 👋 **Onboarding** – sanfter erster Start: Begrüßung, Name, Schriftgröße,
+  optionale Vertrauensperson, Erfolgsabschluss (wird gespeichert; in den
+  Einstellungen erneut startbar).
 - 🔊 **Vorlesen** – liest jede Seite per Web Speech API vor (deutsche Stimme).
 - 🅰️ **Schriftgröße** – drei Stufen, oben rechts umschaltbar, wird gespeichert.
-- 🗣️ **Klara** – Beispiel-Dialog mit antippbaren Fragen und Antworten.
+- 🗣️ **Klara** – Beispiel-Fragen **und** freie Eingabe per Text oder Mikrofon
+  (Spracheingabe, wo der Browser sie unterstützt). Antworten im Prototyp über
+  einfache Stichwort-Erkennung.
 - ✉️ **Brief erklären** – simulierte Brieferklärung in 3 einfachen Sätzen.
 - 🛡️ **Betrug prüfen** – Ampel-Bewertung (🟢/🟡/🔴) für Beispiel-Nachrichten.
 - 📄 **Formular ausfüllen** – Schritt-für-Schritt-Dialog bis zur Erfolgsmeldung.
@@ -35,10 +40,17 @@ Auf dem Smartphone/Desktop kann die Seite über das Browser-Menü
 
 ## Bewusst simuliert (im Prototyp)
 
-Kamera/Foto-Upload, echte KI-Antworten, PDF-Export, SMS/Anruf-Erinnerungen und
+Kamera/Foto-Upload, **echte KI-Antworten**, PDF-Export, SMS/Anruf-Erinnerungen und
 Konto/Login sind als Platzhalter angedeutet. Diese Funktionen kommen im echten
 Produkt über die in [`../docs/KONZEPT.md`](../docs/KONZEPT.md) beschriebene
 Architektur (KI-Schicht, OCR, TTS/STT, Benachrichtigungen) hinzu.
+
+> **Hinweis zu echter KI:** Ein API-Schlüssel darf nie im Browser-Code stehen, da
+> er sonst öffentlich sichtbar wäre. Echte KI-Antworten (für Klara und die
+> Brieferklärung) laufen daher über einen kleinen Server-Endpunkt (z. B. eine
+> serverlose Funktion), der die Anfrage an das Sprachmodell weiterleitet. Der
+> Prototyp nutzt stattdessen vorbereitete Antworten, damit er ohne Backend sofort
+> testbar ist.
 
 ## Aufbau
 

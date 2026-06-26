@@ -439,3 +439,55 @@ html, body {
 .help-option .emoji { font-size: 2rem; }
 
 .note { font-size: 0.85rem; color: var(--klar-text-soft); margin-top: var(--space-2); }
+
+/* ---------- Frage-Leiste (Freitext + Mikrofon) ---------- */
+.askbar {
+  display: flex;
+  gap: var(--space-1);
+  align-items: stretch;
+  margin: var(--space-2) 0;
+}
+.askbar__input {
+  flex: 1;
+  min-width: 0;
+  font-size: 1.05rem;
+  font-family: inherit;
+  padding: 12px 14px;
+  border: 2px solid var(--klar-border);
+  border-radius: 12px;
+  min-height: 56px;
+}
+.askbar__input:focus { outline: 4px solid var(--klar-amber-500); border-color: var(--klar-blue-500); }
+.askbar__mic, .askbar__send {
+  flex: 0 0 auto;
+  min-height: 56px;
+  border-radius: 12px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.askbar__mic {
+  width: 56px;
+  background: #fff;
+  border: 2px solid var(--klar-blue-500);
+  color: var(--klar-blue-900);
+}
+.askbar__mic--on { background: var(--klar-danger); border-color: var(--klar-danger); color: #fff; width: auto; padding: 0 14px; }
+.askbar__send {
+  padding: 0 18px;
+  background: var(--klar-blue-900);
+  border: 2px solid var(--klar-blue-900);
+  color: #fff;
+}
+.askbar__mic:focus-visible, .askbar__send:focus-visible { outline: 4px solid var(--klar-amber-500); outline-offset: 2px; }
+
+/* ---------- Onboarding ---------- */
+.onb { text-align: center; margin: var(--space-4) 0 var(--space-3); }
+.onb__emoji { font-size: 4rem; line-height: 1; margin-bottom: var(--space-2); }
+.onb__title { font-size: 1.6rem; margin: 0 0 var(--space-2); }
+.onb__text { font-size: 1.1rem; color: var(--klar-text-soft); margin: 0 auto; max-width: 32ch; }
+.onb + .field, .onb + div { margin-top: var(--space-2); }
+.onb ~ .btn, .onb ~ div .btn { margin-bottom: var(--space-2); }
+
+/* Während des Onboardings die untere Navigation ausblenden */
+body[data-onboarding] .tabbar { display: none; }

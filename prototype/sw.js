@@ -1,5 +1,5 @@
 /* Klar – einfacher Service Worker für Offline-Fähigkeit (PWA) */
-var CACHE = "klar-v1";
+var CACHE = "klar-v2";
 var ASSETS = [
   "./",
   "./index.html",

@@ -7,7 +7,21 @@
 (function () {
   "use strict";
 
-  var USER_NAME = "Helga"; // im echten Produkt aus dem Onboarding
+  // Name kommt aus dem Onboarding (im localStorage gespeichert)
+  function userName() {
+    try { return localStorage.getItem("klar-name") || "Helga"; }
+    catch (e) { return "Helga"; }
+  }
+  function setName(n) {
+    try { localStorage.setItem("klar-name", n); } catch (e) {}
+  }
+  function isOnboarded() {
+    try { return localStorage.getItem("klar-onboarded") === "1"; }
+    catch (e) { return false; }
+  }
+  function markOnboarded() {
+    try { localStorage.setItem("klar-onboarded", "1"); } catch (e) {}
+  }
 
   // ---- Elemente ----
   var screenEl   = document.getElementById("screen");
@@ -104,7 +118,7 @@
       var frag = document.createDocumentFragment();
       frag.appendChild(el(
         '<div class="greeting">' +
-          '<h1>Hallo ' + esc(USER_NAME) + ' 👋</h1>' +
+          '<h1>Hallo ' + esc(userName()) + ' 👋</h1>' +
           '<p>Wie kann ich dir helfen?</p>' +
         '</div>'
       ));
@@ -146,7 +160,7 @@
 
       return {
         node: frag,
-        readText: "Hallo " + USER_NAME + ". Wie kann ich dir helfen? " +
+        readText: "Hallo " + userName() + ". Wie kann ich dir helfen? " +
           "Du kannst mit Klara sprechen, einen Brief erklären lassen, ein Formular ausfüllen, " +
           "Betrug prüfen oder deine Erinnerungen ansehen. " +
           "Deine nächste Erinnerung: Wohngeld-Antrag abgeben bis zum 10. Juli."
@@ -160,7 +174,7 @@
 
       var chat = el('<div class="chat"></div>');
       chat.appendChild(makeBubble("klara",
-        "Hallo " + USER_NAME + "! Ich bin Klara. Frag mich etwas – zum Beispiel zu einem Brief, " +
+        "Hallo " + userName() + "! Ich bin Klara. Frag mich etwas – zum Beispiel zu einem Brief, " +
         "einem Antrag oder wenn du unsicher bist, ob eine Nachricht echt ist."));
       frag.appendChild(chat);
 
@@ -177,27 +191,55 @@
          "Bitte nicht klicken! Das ist sehr oft Betrug. Geh auf „Betrug prüfen“, dann schaue " +
          "ich mir die Nachricht genau an und sage dir, ob sie gefährlich ist."]
       ];
+      // gemeinsame Antwort-Funktion (für Beispiel-Chips UND Freitext)
+      function respond(question, fixedAnswer) {
+        chat.appendChild(makeBubble("user", question));
+        var answer = fixedAnswer || klaraAnswer(question);
+        var b = makeBubble("klara", answer);
+        chat.appendChild(b);
+        b.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        screenEl.setAttribute("data-read", answer);
+      }
+
       examples.forEach(function (ex) {
         var chip = el('<button class="chip">' + esc(ex[0]) + '</button>');
-        chip.addEventListener("click", function () {
-          chat.appendChild(makeBubble("user", ex[0]));
-          var b = makeBubble("klara", ex[1]);
-          chat.appendChild(b);
-          b.scrollIntoView({ behavior: "smooth", block: "nearest" });
-          screenEl.setAttribute("data-read", ex[1]);
-        });
+        chip.addEventListener("click", function () { respond(ex[0], ex[1]); });
         chips.appendChild(chip);
       });
       frag.appendChild(el('<p class="card__hint">Beispiel-Fragen (zum Ausprobieren tippen):</p>'));
       frag.appendChild(chips);
 
-      frag.appendChild(el('<p class="note">Im echten Produkt kannst du auch frei tippen oder ' +
-        'das Mikrofon nutzen und deine Frage einfach sagen.</p>'));
+      // Freitext-Eingabe mit Mikrofon
+      var bar = el(
+        '<form class="askbar" autocomplete="off">' +
+          '<button type="button" class="askbar__mic" title="Frage sprechen" aria-label="Frage sprechen">🎤</button>' +
+          '<input class="askbar__input" type="text" placeholder="Schreib oder sag deine Frage …" aria-label="Deine Frage">' +
+          '<button type="submit" class="askbar__send" aria-label="Frage senden">Senden</button>' +
+        '</form>'
+      );
+      var input = bar.querySelector(".askbar__input");
+      var mic = bar.querySelector(".askbar__mic");
+      bar.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var q = input.value.trim();
+        if (!q) return;
+        respond(q);
+        input.value = "";
+        input.focus();
+      });
+      setupMic(mic, input, function () {
+        var q = input.value.trim();
+        if (q) { respond(q); input.value = ""; }
+      });
+      frag.appendChild(bar);
+
+      frag.appendChild(el('<p class="note">Hinweis: In diesem Prototyp antwortet Klara mit ' +
+        'vorbereiteten Beispiel-Antworten. Im echten Produkt antwortet eine KI frei.</p>'));
 
       return {
         node: frag,
-        readText: "Hallo " + USER_NAME + ". Ich bin Klara. Frag mich etwas. " +
-          "Du kannst eine der Beispiel-Fragen antippen, um zu sehen, wie ich antworte."
+        readText: "Hallo " + userName() + ". Ich bin Klara. Frag mich etwas. " +
+          "Du kannst eine Beispiel-Frage antippen oder deine eigene Frage schreiben oder sprechen."
       };
     },
 
@@ -448,6 +490,12 @@
       frag.appendChild(el('<div class="card"><h2>Vorlesen</h2><p>Tippe oben auf „Vorlesen“, dann lese ich dir die Seite vor.</p></div>'));
       frag.appendChild(el('<div class="card"><h2>Anrede</h2><p>Du wirst aktuell mit „Du“ angesprochen. Im echten Produkt kannst du auch „Sie“ wählen.</p></div>'));
       frag.appendChild(el('<div class="card card--accent"><h2>🔒 Deine Daten</h2><p>Klar verkauft deine Daten nie und fragt nie nach Passwörtern, PIN oder TAN.</p></div>'));
+      var redo = el('<button class="btn btn--ghost btn--block">▶️ Einführung erneut ansehen</button>');
+      redo.addEventListener("click", function () {
+        try { localStorage.removeItem("klar-onboarded"); } catch (e) {}
+        startOnboarding();
+      });
+      frag.appendChild(redo);
       return { node: frag, readText:
         "Einstellungen. Hier kannst du die Schriftgröße ändern, das Vorlesen nutzen und die Anrede wählen." };
     }
@@ -463,6 +511,189 @@
       b.appendChild(r);
     }
     return b;
+  }
+
+  // ------------------------------------------------------------
+  //  Klara-Antworten (Prototyp: einfache Stichwort-Erkennung)
+  //  Im echten Produkt antwortet hier eine KI über einen Server.
+  // ------------------------------------------------------------
+  function klaraAnswer(q) {
+    var t = " " + q.toLowerCase() + " ";
+    function has() {
+      for (var i = 0; i < arguments.length; i++) {
+        if (t.indexOf(arguments[i]) !== -1) return true;
+      }
+      return false;
+    }
+    if (has("wohngeld", "miete", "zuschuss"))
+      return "Wohngeld ist ein Zuschuss vom Staat zu deiner Miete. Wenn dein Einkommen " +
+        "nicht reicht, hilft der Staat mit. Du musst es einmal beantragen. Soll ich dir beim Antrag helfen? " +
+        "Tippe dazu unten auf „Start“ und dann auf „Formular ausfüllen“.";
+    if (has("betrug", "phishing", "link", "klicken", "gewonnen", "paket", "zoll", "pin", "tan", "passwort"))
+      return "Das klingt verdächtig. Bitte klicke auf keinen Link und gib keine Daten ein. " +
+        "Geh auf „Betrug prüfen“ – dort schaue ich mir die Nachricht an und sage dir mit einer Ampel, " +
+        "ob sie gefährlich ist. Echte Stellen fragen nie nach PIN, TAN oder Passwort.";
+    if (has("brief", "schreiben vom amt", "behörde", "finanzamt", "bescheid"))
+      return "Einen Brief erkläre ich dir gern. Tippe auf „Brief erklären“ und mach ein Foto. " +
+        "Ich sage dir dann in einfacher Sprache, was drinsteht und was du tun musst.";
+    if (has("termin", "arzt", "bürgeramt", "buchen"))
+      return "Einen Termin online zu buchen zeige ich dir Schritt für Schritt mit Bildern. " +
+        "Tippe unten auf „Anleitungen“ und wähle „Termin beim Bürgeramt buchen“.";
+    if (has("überweis", "geld senden", "konto", "bank"))
+      return "Online überweisen üben wir gemeinsam. Unter „Anleitungen“ findest du eine bebilderte " +
+        "Schritt-für-Schritt-Hilfe. Und keine Sorge: Klar fragt dich nie nach deiner PIN oder TAN.";
+    if (has("erinner", "frist", "vergessen", "wann"))
+      return "Ich kann dich an Termine und Fristen erinnern – auf Wunsch sogar per Anruf. " +
+        "Schau unter „Erinnerungen“, dort siehst du deine nächsten Termine.";
+    if (has("hallo", "hi ", "guten tag", "danke", "wie geht"))
+      return "Hallo! Schön, dass du da bist. Frag mich einfach – zu einem Brief, einem Antrag, " +
+        "einem Termin oder wenn du unsicher bist, ob eine Nachricht echt ist.";
+    return "Das ist eine gute Frage. In diesem Prototyp kann ich nur ein paar Beispiele beantworten " +
+      "(Briefe, Wohngeld, Betrug, Termine, Überweisungen, Erinnerungen). " +
+      "Im echten Produkt beantworte ich dir alles in einfacher Sprache. Probier gern eine der Beispiel-Fragen oben.";
+  }
+
+  // ------------------------------------------------------------
+  //  Mikrofon / Spracheingabe (Web Speech API, wenn verfügbar)
+  // ------------------------------------------------------------
+  function setupMic(micBtn, input, onResult) {
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { micBtn.style.display = "none"; return; } // Browser kann es nicht
+    var rec = new SR();
+    rec.lang = "de-DE";
+    rec.interimResults = false;
+    rec.maxAlternatives = 1;
+    var listening = false;
+    micBtn.addEventListener("click", function () {
+      if (listening) { rec.stop(); return; }
+      try { rec.start(); } catch (e) {}
+    });
+    rec.onstart = function () { listening = true; micBtn.classList.add("askbar__mic--on"); micBtn.textContent = "● Hört zu"; };
+    rec.onend   = function () { listening = false; micBtn.classList.remove("askbar__mic--on"); micBtn.textContent = "🎤"; };
+    rec.onerror = function () { listening = false; micBtn.classList.remove("askbar__mic--on"); micBtn.textContent = "🎤"; };
+    rec.onresult = function (e) {
+      var text = e.results[0][0].transcript;
+      input.value = text;
+      if (onResult) onResult();
+    };
+  }
+
+  // ============================================================
+  //  Onboarding (erster Start) – eigene, ablenkungsfreie Schritte
+  // ============================================================
+  function startOnboarding() {
+    document.body.setAttribute("data-onboarding", "1"); // blendet die untere Navigation aus
+    backBtn.hidden = true;
+    var step = 0;
+    var tempName = "";
+
+    function render(node, readText) {
+      stopSpeaking();
+      screenEl.innerHTML = "";
+      screenEl.appendChild(node);
+      screenEl.setAttribute("data-read", readText || screenEl.innerText);
+      screenEl.focus();
+      window.scrollTo(0, 0);
+    }
+
+    function finish() {
+      markOnboarded();
+      document.body.removeAttribute("data-onboarding");
+      go("home", true);
+    }
+
+    var steps = [
+      // 1) Begrüßung
+      function () {
+        var f = document.createDocumentFragment();
+        f.appendChild(el(
+          '<div class="onb">' +
+            '<div class="onb__emoji" aria-hidden="true">👋</div>' +
+            '<h1 class="onb__title">Hallo! Ich bin Klara.</h1>' +
+            '<p class="onb__text">Ich helfe dir bei allem Digitalen – ganz in Ruhe. ' +
+            'Du kannst nichts falsch machen.</p>' +
+          '</div>'
+        ));
+        var btn = el('<button class="btn btn--block btn--amber">Los geht\'s →</button>');
+        btn.addEventListener("click", next);
+        f.appendChild(btn);
+        render(f, "Hallo! Ich bin Klara. Ich helfe dir bei allem Digitalen, ganz in Ruhe. Du kannst nichts falsch machen.");
+      },
+      // 2) Name
+      function () {
+        var f = document.createDocumentFragment();
+        f.appendChild(el('<div class="onb"><div class="onb__emoji" aria-hidden="true">😊</div>' +
+          '<h1 class="onb__title">Wie möchtest du angesprochen werden?</h1>' +
+          '<p class="onb__text">Schreib einfach deinen Vornamen.</p></div>'));
+        var field = el('<div class="field"><input id="onbName" type="text" placeholder="z. B. Helga" autocomplete="off"></div>');
+        f.appendChild(field);
+        var btn = el('<button class="btn btn--block btn--amber">Weiter →</button>');
+        btn.addEventListener("click", function () {
+          var v = field.querySelector("#onbName").value.trim();
+          tempName = v || "Helga";
+          setName(tempName);
+          next();
+        });
+        f.appendChild(btn);
+        var skip = el('<button class="btn btn--ghost btn--block">Überspringen</button>');
+        skip.addEventListener("click", function () { setName("Helga"); next(); });
+        f.appendChild(skip);
+        render(f, "Wie möchtest du angesprochen werden? Schreib einfach deinen Vornamen.");
+        var inp = field.querySelector("#onbName");
+        if (inp) inp.focus();
+      },
+      // 3) Schriftgröße
+      function () {
+        var f = document.createDocumentFragment();
+        f.appendChild(el('<div class="onb"><div class="onb__emoji" aria-hidden="true">🅰️</div>' +
+          '<h1 class="onb__title">Wie groß soll die Schrift sein?</h1>' +
+          '<p class="onb__text">Wähle, was du am besten lesen kannst. Du kannst es später jederzeit ändern.</p></div>'));
+        var opts = el('<div></div>');
+        [["base", "So ist gut", "1rem"], ["large", "Etwas größer", "1.25rem"], ["xlarge", "Noch größer", "1.5rem"]]
+          .forEach(function (o) {
+            var b = el('<button class="btn btn--ghost btn--block" style="font-size:' + o[2] + '">' + esc(o[1]) + '</button>');
+            b.addEventListener("click", function () {
+              document.documentElement.setAttribute("data-fontsize", o[0]);
+              try { localStorage.setItem("klar-fontsize", o[0]); } catch (e) {}
+              next();
+            });
+            opts.appendChild(b);
+          });
+        f.appendChild(opts);
+        render(f, "Wie groß soll die Schrift sein? Wähle, was du am besten lesen kannst.");
+      },
+      // 4) Vertrauensperson (optional)
+      function () {
+        var f = document.createDocumentFragment();
+        f.appendChild(el('<div class="onb"><div class="onb__emoji" aria-hidden="true">🤝</div>' +
+          '<h1 class="onb__title">Möchtest du eine Vertrauensperson hinterlegen?</h1>' +
+          '<p class="onb__text">Das kann ein Kind, ein Enkel oder eine Freundin sein, ' +
+          'die dir bei Bedarf helfen darf. Du kannst das auch später machen.</p></div>'));
+        var btn = el('<button class="btn btn--block btn--amber">Jetzt hinzufügen</button>');
+        btn.addEventListener("click", function () {
+          alert("Im echten Produkt trägst du hier die Telefonnummer deiner Vertrauensperson ein.");
+          next();
+        });
+        var skip = el('<button class="btn btn--ghost btn--block">Später, weiter →</button>');
+        skip.addEventListener("click", next);
+        f.appendChild(btn); f.appendChild(skip);
+        render(f, "Möchtest du eine Vertrauensperson hinterlegen? Das kann jemand sein, der dir bei Bedarf helfen darf. Du kannst das auch später machen.");
+      },
+      // 5) Fertig
+      function () {
+        var f = document.createDocumentFragment();
+        f.appendChild(el('<div class="success-banner"><div class="emoji" aria-hidden="true">🎉</div>' +
+          '<h2>Alles bereit, ' + esc(userName()) + '!</h2>' +
+          '<p>Probier es gleich aus: Stell Klara eine Frage oder lass dir einen Brief erklären.</p></div>'));
+        var btn = el('<button class="btn btn--block btn--amber">Zur Startseite →</button>');
+        btn.addEventListener("click", finish);
+        f.appendChild(btn);
+        render(f, "Alles bereit, " + userName() + "! Probier es gleich aus. Stell Klara eine Frage oder lass dir einen Brief erklären.");
+      }
+    ];
+
+    function next() { step++; if (step >= steps.length) finish(); else steps[step](); }
+    steps[0]();
   }
 
   // ============================================================
@@ -507,9 +738,13 @@
     });
   });
 
-  // Start
-  var startScreen = (location.hash || "").replace("#", "") || "home";
-  go(screens[startScreen] ? startScreen : "home", true);
+  // Start: beim allerersten Mal das Onboarding zeigen
+  if (!isOnboarded()) {
+    startOnboarding();
+  } else {
+    var startScreen = (location.hash || "").replace("#", "") || "home";
+    go(screens[startScreen] ? startScreen : "home", true);
+  }
 
   // ============================================================
   //  Service Worker (Offline-Fähigkeit der PWA)
