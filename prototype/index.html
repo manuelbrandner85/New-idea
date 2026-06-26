@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="de" data-fontsize="base">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1B4D7A" />
+  <meta name="description" content="Klar – Deine digitale Alltagshilfe. Einfache Hilfe bei Briefen, Formularen, Betrug und Terminen." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>Klar – Deine digitale Alltagshilfe</title>
+</head>
+<body>
+  <!-- App-Rahmen -->
+  <div class="app" id="app">
+
+    <!-- Kopfzeile -->
+    <header class="topbar" role="banner">
+      <button class="topbar__back" id="backBtn" aria-label="Zurück" hidden>
+        <span aria-hidden="true">←</span> Zurück
+      </button>
+      <div class="topbar__brand">Klar</div>
+      <div class="topbar__tools">
+        <button class="iconbtn" id="readBtn" aria-pressed="false" title="Diese Seite vorlesen">
+          <span aria-hidden="true">🔊</span><span class="iconbtn__label">Vorlesen</span>
+        </button>
+        <button class="iconbtn" id="fontBtn" title="Schrift größer machen">
+          <span aria-hidden="true">Aa</span><span class="iconbtn__label">Schrift</span>
+        </button>
+        <button class="iconbtn" id="settingsBtn" title="Einstellungen">
+          <span aria-hidden="true">⚙️</span><span class="iconbtn__label">Einstellung</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Inhaltsbereich – wird per JavaScript gefüllt -->
+    <main class="content" id="screen" tabindex="-1" aria-live="polite"></main>
+
+    <!-- Untere Navigation -->
+    <nav class="tabbar" role="navigation" aria-label="Hauptnavigation">
+      <button class="tab" data-go="home"><span aria-hidden="true">🏠</span><span>Start</span></button>
+      <button class="tab" data-go="klara"><span aria-hidden="true">🗣️</span><span>Klara</span></button>
+      <button class="tab" data-go="anleitungen"><span aria-hidden="true">📚</span><span>Anleitungen</span></button>
+      <button class="tab" data-go="hilfe"><span aria-hidden="true">❓</span><span>Hilfe</span></button>
+    </nav>
+  </div>
+
+  <!-- Hinweis: laufendes Vorlesen -->
+  <div class="speaking-banner" id="speakingBanner" hidden>
+    <span aria-hidden="true">🔊</span> Ich lese vor …
+    <button id="stopReadBtn" class="speaking-banner__stop">Stopp</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

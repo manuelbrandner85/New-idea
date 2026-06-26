@@ -1,0 +1,441 @@
+/* =========================================================
+   Klar – Designsystem (siehe docs/DESIGNSYSTEM.md)
+   ========================================================= */
+
+:root {
+  /* Primär */
+  --klar-blue-900: #1B4D7A;
+  --klar-blue-500: #3B82C4;
+  --klar-blue-100: #E3EEF7;
+
+  /* Akzent (Wärme / Klara) */
+  --klar-amber-500: #E8A33D;
+  --klar-amber-700: #C77800;
+  --klar-amber-100: #FBEFD9;
+
+  /* Neutral */
+  --klar-bg:        #F7F9FB;
+  --klar-surface:   #FFFFFF;
+  --klar-text:      #1A2733;
+  --klar-text-soft: #4A5A6A;
+  --klar-border:    #D4DCE4;
+
+  /* Status (Ampel) */
+  --klar-safe:    #2E7D4F;
+  --klar-safe-bg: #E4F1EA;
+  --klar-warn:    #C77800;
+  --klar-warn-bg: #FBEFD9;
+  --klar-danger:  #C0392B;
+  --klar-danger-bg: #F8E4E1;
+
+  /* Typografie */
+  --font-family: "Atkinson Hyperlegible", "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --font-base: 20px;
+  --line-height: 1.6;
+
+  /* Abstände (8px-System) */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-6: 48px;
+  --radius: 16px;
+  --shadow: 0 2px 10px rgba(27, 77, 122, 0.10);
+  --shadow-lg: 0 6px 22px rgba(27, 77, 122, 0.16);
+}
+
+/* Schriftgröße per Nutzer-Einstellung */
+html[data-fontsize="base"]   { font-size: 20px; }
+html[data-fontsize="large"]  { font-size: 24px; }
+html[data-fontsize="xlarge"] { font-size: 28px; }
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--klar-bg);
+  color: var(--klar-text);
+  font-family: var(--font-family);
+  line-height: var(--line-height);
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+/* App-Rahmen: zentriert, max. Breite wie ein Gerät, aber responsiv */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  max-width: 900px;
+  margin: 0 auto;
+  background: var(--klar-bg);
+}
+
+/* ---------- Kopfzeile ---------- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  padding-top: max(var(--space-2), env(safe-area-inset-top));
+  background: var(--klar-blue-900);
+  color: #fff;
+}
+.topbar__brand {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.topbar__back {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 10px 14px;
+  cursor: pointer;
+  min-height: 48px;
+}
+.topbar__tools {
+  margin-left: auto;
+  display: flex;
+  gap: var(--space-1);
+}
+.iconbtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 56px;
+  min-height: 56px;
+  padding: 6px;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.iconbtn__label { font-size: 0.62rem; font-weight: 600; }
+.iconbtn[aria-pressed="true"] { background: var(--klar-amber-500); color: #1A2733; }
+.iconbtn:focus-visible, .topbar__back:focus-visible { outline: 4px solid var(--klar-amber-500); outline-offset: 2px; }
+
+/* ---------- Inhalt ---------- */
+.content {
+  flex: 1;
+  padding: var(--space-3) var(--space-2) var(--space-6);
+  outline: none;
+}
+.content:focus-visible { outline: none; }
+
+.greeting { margin: 0 0 var(--space-3); }
+.greeting h1 { font-size: 1.6rem; margin: 0 0 4px; }
+.greeting p  { font-size: 1.1rem; color: var(--klar-text-soft); margin: 0; }
+
+.screen-title { font-size: 1.5rem; margin: 0 0 var(--space-2); }
+.screen-intro { font-size: 1.05rem; color: var(--klar-text-soft); margin: 0 0 var(--space-3); }
+
+/* ---------- Hauptknopf ---------- */
+.bigbutton {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 78px;
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-3);
+  background: var(--klar-blue-900);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+}
+.bigbutton .emoji { font-size: 2rem; }
+.bigbutton small { display: block; font-size: 0.85rem; font-weight: 500; opacity: 0.9; }
+.bigbutton:active { transform: translateY(1px); }
+
+/* ---------- Kachelraster ---------- */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-2);
+}
+@media (min-width: 640px) {
+  .tiles { grid-template-columns: repeat(3, 1fr); }
+}
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  min-height: 150px;
+  padding: var(--space-2);
+  background: var(--klar-surface);
+  border: 2px solid var(--klar-border);
+  border-radius: var(--radius);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--klar-text);
+  text-align: center;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+.tile .emoji { font-size: 2.4rem; }
+.tile:active { transform: translateY(1px); }
+.tile:focus-visible, .bigbutton:focus-visible, .tab:focus-visible,
+.btn:focus-visible, .chip:focus-visible { outline: 4px solid var(--klar-amber-500); outline-offset: 3px; }
+
+/* ---------- Kontext-Karte ---------- */
+.card {
+  background: var(--klar-surface);
+  border: 2px solid var(--klar-border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  margin-bottom: var(--space-2);
+  box-shadow: var(--shadow);
+}
+.card--accent { border-color: var(--klar-amber-500); background: var(--klar-amber-100); }
+.card h2 { font-size: 1.15rem; margin: 0 0 var(--space-1); }
+.card p { margin: 0 0 var(--space-1); }
+.card__hint { font-size: 0.85rem; color: var(--klar-text-soft); }
+
+/* ---------- Standard-Knopf ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  min-height: 64px;
+  padding: 0 var(--space-3);
+  margin-top: var(--space-1);
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 2px solid var(--klar-blue-900);
+  background: var(--klar-blue-900);
+  color: #fff;
+}
+.btn--ghost { background: #fff; color: var(--klar-blue-900); }
+.btn--block { width: 100%; }
+.btn--amber { background: var(--klar-amber-500); border-color: var(--klar-amber-500); color: #1A2733; }
+.btn-row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+/* ---------- Ampel (Betrugsprüfung) ---------- */
+.ampel {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  border: 3px solid;
+  margin-bottom: var(--space-2);
+}
+.ampel .emoji { font-size: 2.4rem; line-height: 1; }
+.ampel h2 { margin: 0 0 4px; font-size: 1.3rem; }
+.ampel p { margin: 0; }
+.ampel--safe   { border-color: var(--klar-safe);   background: var(--klar-safe-bg); }
+.ampel--warn   { border-color: var(--klar-warn);   background: var(--klar-warn-bg); }
+.ampel--danger { border-color: var(--klar-danger); background: var(--klar-danger-bg); }
+.ampel--safe h2   { color: var(--klar-safe); }
+.ampel--warn h2   { color: var(--klar-warn); }
+.ampel--danger h2 { color: var(--klar-danger); }
+
+/* ---------- Klara-Dialog ---------- */
+.chat { display: flex; flex-direction: column; gap: var(--space-2); margin-bottom: var(--space-3); }
+.bubble {
+  max-width: 85%;
+  padding: var(--space-2);
+  border-radius: var(--radius);
+  font-size: 1.05rem;
+}
+.bubble--klara { align-self: flex-start; background: var(--klar-amber-100); border: 2px solid var(--klar-amber-500); }
+.bubble--user  { align-self: flex-end;   background: var(--klar-blue-100);  border: 2px solid var(--klar-blue-500); }
+.bubble__name { font-size: 0.8rem; font-weight: 700; color: var(--klar-amber-700); margin-bottom: 2px; }
+.bubble__read {
+  margin-top: var(--space-1);
+  background: #fff;
+  border: 2px solid var(--klar-amber-500);
+  color: var(--klar-amber-700);
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+/* Vorschläge / Chips */
+.chips { display: flex; flex-wrap: wrap; gap: var(--space-1); margin-bottom: var(--space-2); }
+.chip {
+  background: #fff;
+  border: 2px solid var(--klar-blue-500);
+  color: var(--klar-blue-900);
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 48px;
+}
+
+/* Schritt-für-Schritt */
+.steps { list-style: none; padding: 0; margin: 0; counter-reset: step; }
+.step {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  background: var(--klar-surface);
+  border: 2px solid var(--klar-border);
+  border-radius: var(--radius);
+  padding: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+.step__num {
+  flex: 0 0 auto;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--klar-blue-900);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 1.2rem;
+}
+.step__img {
+  width: 100%; height: 120px;
+  background: var(--klar-blue-100);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.4rem; margin-top: var(--space-1);
+  border: 2px dashed var(--klar-blue-500);
+}
+.step__body { flex: 1; }
+
+/* Erinnerungen */
+.reminder {
+  display: flex; align-items: center; gap: var(--space-2);
+  background: var(--klar-surface);
+  border: 2px solid var(--klar-border);
+  border-left: 8px solid var(--klar-amber-500);
+  border-radius: 12px;
+  padding: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+.reminder__date {
+  flex: 0 0 auto; text-align: center; min-width: 64px;
+  background: var(--klar-amber-100); border-radius: 10px; padding: 8px;
+  font-weight: 700; line-height: 1.2;
+}
+.reminder__date strong { display: block; font-size: 1.4rem; color: var(--klar-amber-700); }
+
+/* Formular-Felder (einfache Dialogform) */
+.field { margin-bottom: var(--space-3); }
+.field label { display: block; font-size: 1.15rem; font-weight: 700; margin-bottom: var(--space-1); }
+.field .help { font-size: 0.9rem; color: var(--klar-text-soft); margin-bottom: var(--space-1); }
+.field input, .field textarea {
+  width: 100%;
+  font-size: 1.1rem;
+  font-family: inherit;
+  padding: 14px;
+  border: 2px solid var(--klar-border);
+  border-radius: 12px;
+  min-height: 56px;
+}
+.field input:focus, .field textarea:focus { outline: 4px solid var(--klar-amber-500); border-color: var(--klar-blue-500); }
+
+.progress { font-size: 0.9rem; color: var(--klar-text-soft); margin-bottom: var(--space-2); }
+
+.success-banner {
+  background: var(--klar-safe-bg);
+  border: 3px solid var(--klar-safe);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  text-align: center;
+  margin-bottom: var(--space-2);
+}
+.success-banner .emoji { font-size: 3rem; }
+.success-banner h2 { color: var(--klar-safe); margin: var(--space-1) 0; }
+
+/* ---------- Untere Navigation ---------- */
+.tabbar {
+  position: sticky;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  padding: var(--space-1);
+  padding-bottom: max(var(--space-1), env(safe-area-inset-bottom));
+  background: var(--klar-surface);
+  border-top: 2px solid var(--klar-border);
+}
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 4px;
+  background: none;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--klar-text-soft);
+  cursor: pointer;
+  min-height: 60px;
+}
+.tab span[aria-hidden] { font-size: 1.5rem; }
+.tab[aria-current="page"] { color: var(--klar-blue-900); background: var(--klar-blue-100); }
+
+/* ---------- Vorlese-Banner ---------- */
+.speaking-banner {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 88px;
+  background: var(--klar-amber-500);
+  color: #1A2733;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: 999px;
+  box-shadow: var(--shadow-lg);
+  display: flex; align-items: center; gap: var(--space-2);
+  z-index: 20;
+}
+/* Wichtig: die Klasse setzt display:flex und würde sonst das [hidden]-Attribut
+   überschreiben. Diese Regel sorgt dafür, dass das Banner wirklich verborgen ist. */
+.speaking-banner[hidden] { display: none; }
+.speaking-banner__stop {
+  background: #1A2733; color: #fff; border: none;
+  border-radius: 999px; padding: 6px 14px; font-weight: 700; cursor: pointer;
+  min-height: 40px;
+}
+
+/* Hilfe-Optionen */
+.help-option {
+  display: flex; align-items: center; gap: var(--space-2);
+  background: var(--klar-surface);
+  border: 2px solid var(--klar-border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  margin-bottom: var(--space-2);
+  font-size: 1.1rem; font-weight: 700;
+  cursor: pointer; width: 100%; text-align: left; color: var(--klar-text);
+}
+.help-option .emoji { font-size: 2rem; }
+
+.note { font-size: 0.85rem; color: var(--klar-text-soft); margin-top: var(--space-2); }
